@@ -1,0 +1,26 @@
+{
+  "name": "course-outlines",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "firebase": "^5.4.2",
+    "react": "^16.4.2",
+    "react-device-detect": "^1.5.9",
+    "react-dom": "^16.4.2",
+    "react-firebaseui": "^3.0.7",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "1.1.5",
+    "react-spinners": "^0.4.5",
+    "reactjs-popup": "^1.2.0",
+    "tachyons": "^4.11.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "dotenv": "^6.0.0"
+  }
+}
