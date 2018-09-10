@@ -154,7 +154,7 @@ class App extends Component {
   });
 
   const stickyStyle = sticky ? {width:'100%', backgroundColor:'whitesmoke', zIndex:1, position: 'fixed', top: 0} : {width:'100%', backgroundColor:'whitesmoke', zIndex:1};
-  const lowerDivStyle = sticky ? {marginTop:110, marginBottom:90} : {marginTop:12, marginBottom:90};
+  const lowerDivStyle = sticky ? {marginTop:110, marginBottom:100} : {marginTop:12, marginBottom:100};
   const title = selectedDepartment.length !== 0 ? departments.filter(d => d.department_type === selectedDepartment).map(d => d.department_name) : 'Course Outline Search';
   return error ? (<div className = 'tc'><h1 className='f1' style={{color:'whitesmoke'}} >Something Went Wrong</h1></div>):(
       <div className='tc'>

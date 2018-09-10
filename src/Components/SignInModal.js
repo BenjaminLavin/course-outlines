@@ -6,6 +6,7 @@ import { BeatLoader } from 'react-spinners';
 
 import './SignInModal.css'
 import firebase from '../Config/Firebase';
+import ResetPassword from './ResetPassword';
 
 const uiConfig = {
   // Popup signin flow rather than redirect flow.
@@ -33,7 +34,9 @@ class SignInModal extends Component {
       loading: false,
       firstName: '',
       lastName: '',
-      modalWidth: 400
+      modalWidth: 400,
+      passError: false,
+      resetPassword: false
     };
   }
 
@@ -49,7 +52,8 @@ class SignInModal extends Component {
     .then((message) => {this.onAuthSuccess()})
     .catch((error) => {
       const message = error.code === 'auth/invalid-email' ? error.message : 'Invalid email/password combination';
-      this.onAuthFail(message)
+      this.setState({passError: true});
+      this.onAuthFail(message);
     });
   }
 
@@ -63,7 +67,6 @@ class SignInModal extends Component {
     this.setState({error: '', loading: true});
     firebase.auth().createUserWithEmailAndPassword(email, password)
     .then((response) => {
-      console.log(response);
       if(response.user){
         response.user.updateProfile({
           displayName: `${firstName} ${lastName}`
@@ -79,16 +82,38 @@ class SignInModal extends Component {
   }
 
   onAuthSuccess(){
-    this.setState({error: '', email: '', password: '', repeatPassword: '', loading: false});
+    this.resetState();
+  }
+
+  forgotPassword(){
+    this.setState({resetPassword: true});
+  }
+
+  resetState(){
+    this.setState({
+      createAccount: false,
+      error: '',
+      email: '',
+      password: '',
+      repeatPassword: '',
+      loading: false,
+      firstName: '',
+      lastName: '',
+      modalWidth: 400,
+      passError: false,
+      resetPassword: false
+    });
+
   }
 
 
   render(){
-    const {createAccount, error, email, password, repeatPassword, loading, firstName, lastName} = this.state;
+    const {createAccount, error, email, password, repeatPassword, loading, firstName, lastName, passError, resetPassword} = this.state;
     const {errorStyle, formButtonStyle} = styles;
 
     const errorBox = error ? <div style={errorStyle}>{error}</div> : null;
     const switchType = createAccount ? <span>Already have an account? <a onClick={() => this.switchType()} style={{color: '#428bca', cursor:'pointer'}}>Login</a></span> : <span>Looking to <a onClick={() => this.switchType()} style={{color: '#428bca', cursor:'pointer'}}>create an account</a>?</span>;
+    const forgotPassword = <span style={{marginTop:10}}><a onClick={() => this.forgotPassword()} style={{color: '#428bca', cursor:'pointer'}}>Forgot Password</a></span>
 
     const loadingSpinner = <div className='pa3' style={formButtonStyle}><BeatLoader sizeUnit={"px"} size={15} color={'whitesmoke'}/></div>;
     const form = createAccount ?
@@ -115,10 +140,11 @@ class SignInModal extends Component {
         trigger={<button className="mh2" style={styles.signInButtonStyle}><span style={styles.signInButtonTextStyle}>Sign in</span></button>}
         modal
         closeOnDocumentClick
+        onClose={() => this.resetState()}
         contentStyle={{width:this.state.modalWidth}}
         >
         <div style={{color:'#32383b', margin:'auto', width:350}}>
-          <h2 style={{margin:'auto', padding: 15}}>{createAccount ? 'Create Account': 'Sign In'}</h2>
+          {resetPassword ? <ResetPassword email={email}/> : <div><h2 style={{margin:'auto', padding: 15}}>{createAccount ? 'Create Account': 'Sign In'}</h2>
           <div>
             <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()}/>
 
@@ -130,9 +156,10 @@ class SignInModal extends Component {
             {errorBox}
             {form}
           </div>
-          <div className="pa3">
+          <div className="pa3" style={{display:'flex', flexDirection:'column'}}>
             {switchType}
-          </div>
+            {passError && !createAccount ? forgotPassword : null}
+          </div></div>}
         </div>
       </Popup>)
     }
