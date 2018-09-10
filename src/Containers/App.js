@@ -34,7 +34,7 @@ class App extends Component {
 
   componentDidMount(){
     this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(
-        (user) => {this.setState({isSignedIn: !!user, user})}
+        (user) => this.setState({isSignedIn: !!user, user})
     );
     window.addEventListener('scroll', this.handleScroll.bind(this));
     firestore.collection('department_list').get()

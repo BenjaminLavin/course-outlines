@@ -23,7 +23,6 @@ class AccountModal extends Component {
   resetState(){
     this.setState({
       error: '',
-      user: {},
       loading: false,
       courseType: '',
       courseNumber: '',
