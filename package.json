@@ -5,6 +5,7 @@
   "dependencies": {
     "firebase": "^5.4.2",
     "react": "^16.4.2",
+    "react-adsense": "0.0.6",
     "react-device-detect": "^1.5.9",
     "react-dom": "^16.4.2",
     "react-firebaseui": "^3.0.7",

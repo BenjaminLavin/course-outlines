@@ -10,7 +10,7 @@ import firebase from '../Config/Firebase';
 const uiConfig = {
   // Popup signin flow rather than redirect flow.
   signInFlow: 'popup',
-  // We will display Email and Facebook as auth providers.
+  // We will display Google and Facebook as auth providers.
   signInOptions: [
     firebase.auth.GoogleAuthProvider.PROVIDER_ID,
     firebase.auth.FacebookAuthProvider.PROVIDER_ID
@@ -30,7 +30,10 @@ class SignInModal extends Component {
       email: '',
       password: '',
       repeatPassword: '',
-      loading: false
+      loading: false,
+      firstName: '',
+      lastName: '',
+      modalWidth: 400
     };
   }
 
@@ -43,7 +46,7 @@ class SignInModal extends Component {
     const {email, password} = this.state;
     this.setState({error: '', loading: true});
     firebase.auth().signInWithEmailAndPassword(email, password)
-    .then(() => this.onAuthSuccess())
+    .then((message) => {this.onAuthSuccess()})
     .catch((error) => {
       const message = error.code === 'auth/invalid-email' ? error.message : 'Invalid email/password combination';
       this.onAuthFail(message)
@@ -51,13 +54,23 @@ class SignInModal extends Component {
   }
 
   onCreateAccountPress(){
-    const {email, password, repeatPassword} = this.state;
+    const {email, password, repeatPassword, firstName, lastName} = this.state;
     if(!email) {this.onAuthFail('Enter an email address'); return;}
     if(!password) {this.onAuthFail('Enter a password'); return;}
     if(password !== repeatPassword) {this.onAuthFail('Passwords must match'); return;}
+    if(!firstName) {this.onAuthFail('Enter a first name'); return;}
+    if(!lastName) {this.onAuthFail('Enter a last name'); return;}
     this.setState({error: '', loading: true});
     firebase.auth().createUserWithEmailAndPassword(email, password)
-    .then(() => this.onAuthSuccess())
+    .then((response) => {
+      console.log(response);
+      if(response.user){
+        response.user.updateProfile({
+          displayName: `${firstName} ${lastName}`
+        })
+      }
+      this.onAuthSuccess();
+    })
     .catch((error) => this.onAuthFail(error.message));
   }
 
@@ -71,11 +84,11 @@ class SignInModal extends Component {
 
 
   render(){
-    const {createAccount, error, email, password, repeatPassword, loading} = this.state;
+    const {createAccount, error, email, password, repeatPassword, loading, firstName, lastName} = this.state;
     const {errorStyle, formButtonStyle} = styles;
 
     const errorBox = error ? <div style={errorStyle}>{error}</div> : null;
-    const switchType = createAccount ? <span>Already have an account? <a onClick={() => this.switchType()} style={{color: '#428bca'}}>Login</a></span> : <span>Looking to <a onClick={() => this.switchType()} style={{color: '#428bca'}}>create an account</a>?</span>;
+    const switchType = createAccount ? <span>Already have an account? <a onClick={() => this.switchType()} style={{color: '#428bca', cursor:'pointer'}}>Login</a></span> : <span>Looking to <a onClick={() => this.switchType()} style={{color: '#428bca', cursor:'pointer'}}>create an account</a>?</span>;
 
     const loadingSpinner = <div className='pa3' style={formButtonStyle}><BeatLoader sizeUnit={"px"} size={15} color={'whitesmoke'}/></div>;
     const form = createAccount ?
@@ -83,6 +96,10 @@ class SignInModal extends Component {
       <input type="text" placeholder="Email" value={email} onChange={(event) => this.setState({email: event.target.value, error: ''})}/>
       <input type="password" placeholder="Password" value={password} onChange={(event) => this.setState({password: event.target.value, error: ''})}/>
       <input type="password" placeholder="Repeat Password" value={repeatPassword} onChange={(event) => this.setState({repeatPassword: event.target.value, error: ''})}/>
+      <div style={{display:'flex', flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
+        <input type="text" style={{width:'49%'}} placeholder="First Name" value={firstName} onChange={(event) => this.setState({firstName: event.target.value, error: ''})}/>
+        <input type="text" style={{width:'49%'}} placeholder="Last Name" value={lastName} onChange={(event) => this.setState({lastName: event.target.value, error: ''})}/>
+      </div>
       {loading ? loadingSpinner : <input className='pa3' style={formButtonStyle} type="button" value="Create Account" onClick={() => this.onCreateAccountPress()}/>}
     </div>
     :
@@ -98,7 +115,7 @@ class SignInModal extends Component {
         trigger={<button className="mh2" style={styles.signInButtonStyle}><span style={styles.signInButtonTextStyle}>Sign in</span></button>}
         modal
         closeOnDocumentClick
-        contentStyle={{width:400}}
+        contentStyle={{width:this.state.modalWidth}}
         >
         <div style={{color:'#32383b', margin:'auto', width:350}}>
           <h2 style={{margin:'auto', padding: 15}}>{createAccount ? 'Create Account': 'Sign In'}</h2>
@@ -142,8 +159,7 @@ class SignInModal extends Component {
     signInButtonTextStyle: {
       color:'#757575',
       fontSize:14,
-      textTransform:'none',
-      verticalAlign:'middle'
+      textTransform:'none'
     },
     errorStyle:{
       color:'#b94a48',
@@ -155,11 +171,13 @@ class SignInModal extends Component {
       borderRadius: 3
     },
     formButtonStyle:{
+      border: 'none',
       borderRadius: 3,
       backgroundColor: '#00BBFF',
       color: 'whitesmoke',
       textTransform: 'uppercase',
-      width: '100%'
+      width: '100%',
+      cursor: 'pointer'
     }
   }
 

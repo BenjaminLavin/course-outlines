@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { BeatLoader } from 'react-spinners';
 import {isMobile} from 'react-device-detect';
+import AdSense from 'react-adsense';
 
 import SyllabusCardList from '../Components/SyllabusCardList';
 import DepartmentCardList from '../Components/DepartmentCardList';
@@ -25,13 +26,14 @@ class App extends Component {
       error: false,
       sticky: false,
       loading: true,
-      isSignedIn: false
+      isSignedIn: false,
+      user: {}
     };
   }
 
   componentDidMount(){
     this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(
-        (user) => this.setState({isSignedIn: !!user})
+        (user) => {this.setState({isSignedIn: !!user, user})}
     );
     window.addEventListener('scroll', this.handleScroll.bind(this));
     firestore.collection('department_list').get()
@@ -60,7 +62,6 @@ class App extends Component {
       this.setState({loading: false});
     })
     .catch((err) => {
-      //console.log('Error getting department list', err);
       this.setState({error: true});
       this.setState({loading:false});
 
@@ -90,7 +91,6 @@ class App extends Component {
         this.setState({loading:false});
       })
       .catch((err) => {
-        //console.log('Error getting syllabusses', err);
         this.setState({error: true});
         this.setState({loading:false});
       });
@@ -123,7 +123,7 @@ class App extends Component {
   }
 
   render(){
-    const {departments, selectedDepartment, currentSyllabusses, searchfield, error, sticky, loading, isSignedIn} = this.state;
+    const {departments, selectedDepartment, currentSyllabusses, searchfield, error, sticky, loading, isSignedIn, user} = this.state;
     const filteredSyllabusses = currentSyllabusses.filter( syllabus => {
       if(syllabus.course_name.toLowerCase().includes(searchfield.toLowerCase())){
         return true;
@@ -154,7 +154,7 @@ class App extends Component {
   });
 
   const stickyStyle = sticky ? {width:'100%', backgroundColor:'whitesmoke', zIndex:1, position: 'fixed', top: 0} : {width:'100%', backgroundColor:'whitesmoke', zIndex:1};
-  const lowerDivStyle = sticky ? {marginTop:110} : {marginTop:12};
+  const lowerDivStyle = sticky ? {marginTop:110, marginBottom:90} : {marginTop:12, marginBottom:90};
   const title = selectedDepartment.length !== 0 ? departments.filter(d => d.department_type === selectedDepartment).map(d => d.department_name) : 'Course Outline Search';
   return error ? (<div className = 'tc'><h1 className='f1' style={{color:'whitesmoke'}} >Something Went Wrong</h1></div>):(
       <div className='tc'>
@@ -176,7 +176,7 @@ class App extends Component {
                 </div>
                 <div style={{display:'flex', alignItems:'center', justifyContent:'flex-end', flex:1}}>
                   {isSignedIn ?
-                    <button onClick={() => firebase.auth().signOut()} className="mh2" style={styles.signInButtonStyle}><span style={styles.signInButtonTextStyle}>Sign out</span></button> : <SignInModal/>}
+                    <div style={{display:'flex', alignItems:'center'}}>{isMobile ? null : <h4 style={{marginRight:20, marginBottom:-1, marginTop:0, marginLeft:0}}>{user.displayName}</h4>}<button onClick={() => firebase.auth().signOut()} className="mh2" style={styles.signInButtonStyle}><span style={styles.signInButtonTextStyle}>Sign out</span></button></div> : <SignInModal/>}
                 </div>
               </div>
             </div>
@@ -201,6 +201,13 @@ class App extends Component {
                    )
                )
               }
+            </div>
+            <div style={{zIndex:1, position: 'fixed', bottom: 0, width:'100%', maxHeight:90}}>
+            <AdSense.Google
+              client='ca-pub-6691808812841726'
+              slot='5688275643'
+              format='auto'
+              responsive='true'/>
             </div>
           </div>
           )
@@ -234,8 +241,7 @@ const styles = {
   signInButtonTextStyle: {
     color:'#757575',
     fontSize:14,
-    textTransform:'none',
-    verticalAlign:'middle'
+    textTransform:'none'
   }
 }
 
