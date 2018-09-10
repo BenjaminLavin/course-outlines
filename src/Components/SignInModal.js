@@ -8,21 +8,27 @@ import './SignInModal.css'
 import firebase from '../Config/Firebase';
 import ResetPassword from './ResetPassword';
 
-const uiConfig = {
-  // Popup signin flow rather than redirect flow.
-  signInFlow: 'popup',
-  // We will display Google and Facebook as auth providers.
-  signInOptions: [
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    firebase.auth.FacebookAuthProvider.PROVIDER_ID
-  ],
-  callbacks: {
-    // Avoid redirects after sign-in.
-    signInSuccessWithAuthResult: () => false
-  }
-};
 
 class SignInModal extends Component {
+  uiConfig = {
+    // Popup signin flow rather than redirect flow.
+    signInFlow: 'popup',
+    // We will display Google and Facebook as auth providers.
+    signInOptions: [
+      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+      firebase.auth.FacebookAuthProvider.PROVIDER_ID
+    ],
+    callbacks: {
+      // Avoid redirects after sign-in.
+      signInSuccessWithAuthResult: (result) => {
+        if(result.additionalUserInfo.isNewUser){
+          this.createNewUserInDB(result.user)
+        }
+      }
+    }
+  };
+
+
   constructor(){
     super();
     this.state = {
@@ -72,9 +78,20 @@ class SignInModal extends Component {
           displayName: `${firstName} ${lastName}`
         })
       }
+      this.createNewUserInDB(response.user, firstName, lastName);
       this.onAuthSuccess();
     })
     .catch((error) => this.onAuthFail(error.message));
+  }
+
+  createNewUserInDB(user, firstName='', lastName=''){
+    firebase.firestore().collection('users').doc(user.uid.toString()).set({
+      uid: user.uid,
+      name: user.displayName,
+      email: user.email,
+      firstName,
+      lastName
+    });
   }
 
   onAuthFail(error){
@@ -146,7 +163,7 @@ class SignInModal extends Component {
         <div style={{color:'#32383b', margin:'auto', width:350}}>
           {resetPassword ? <ResetPassword email={email}/> : <div><h2 style={{margin:'auto', padding: 15}}>{createAccount ? 'Create Account': 'Sign In'}</h2>
           <div>
-            <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()}/>
+            <StyledFirebaseAuth uiConfig={this.uiConfig} firebaseAuth={firebase.auth()}/>
 
             <div style={{display: 'flex', flexDirection:'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18}}>
               <div style={{height: 1, backgroundColor: '#DFDFDF',width: '34%'}}/>

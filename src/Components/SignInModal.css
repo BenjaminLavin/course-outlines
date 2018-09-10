@@ -1,4 +1,4 @@
-input[type="text"], input[type="password"] {
+input[type="text"], input[type="password"], input[type="number"] {
   border-radius: 3px;
   border: none;
   color: #32383b;
@@ -10,10 +10,10 @@ input[type="text"], input[type="password"] {
   background-color: rgba(0, 0, 0, 0.09);
   box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.09) inset;
 }
-input[type="text"]:hover, input[type="password"]:hover{
+input[type="text"]:hover, input[type="password"]:hover, input[type="number"]:hover{
   background-color: rgba(0,0,0,.16);
 }
-input[type="text"]:focus, input[type="password"]:focus{
+input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus{
   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.04) inset;
   background-color: rgba(0,0,0,0.23);
 }

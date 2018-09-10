@@ -7,6 +7,7 @@ import SyllabusCardList from '../Components/SyllabusCardList';
 import DepartmentCardList from '../Components/DepartmentCardList';
 import SearchBox from '../Components/SearchBox';
 import SignInModal from '../Components/SignInModal';
+import AccountModal from '../Components/AccountModal';
 import './App.css'
 import firestore from '../Config/Firestore';
 import firebase from '../Config/Firebase';
@@ -176,7 +177,7 @@ class App extends Component {
                 </div>
                 <div style={{display:'flex', alignItems:'center', justifyContent:'flex-end', flex:1}}>
                   {isSignedIn ?
-                    <div style={{display:'flex', alignItems:'center'}}>{isMobile ? null : <h4 style={{marginRight:20, marginBottom:-1, marginTop:0, marginLeft:0}}>{user.displayName}</h4>}<button onClick={() => firebase.auth().signOut()} className="mh2" style={styles.signInButtonStyle}><span style={styles.signInButtonTextStyle}>Sign out</span></button></div> : <SignInModal/>}
+                    <AccountModal user={user}/> : <SignInModal/>}
                 </div>
               </div>
             </div>
