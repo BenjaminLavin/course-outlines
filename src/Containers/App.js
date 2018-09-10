@@ -15,7 +15,6 @@ import firebase from '../Config/Firebase';
 class App extends Component {
 
   constructor(){
-    console.log(isMobile);
     super();
     this.state = {
       syllabusses: {},
@@ -187,7 +186,7 @@ class App extends Component {
               <BeatLoader
                 sizeUnit={"px"}
                 size={15}
-                color={'#fff'}
+                color={'whitesmoke'}
                 loading={this.state.loading}
                 />
                :

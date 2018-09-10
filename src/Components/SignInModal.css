@@ -1,0 +1,19 @@
+input[type="text"], input[type="password"] {
+  border-radius: 3px;
+  border: none;
+  color: #32383b;
+  font-size: 16px;
+  height: 46px;
+  margin-bottom: 5px;
+  padding: 13px 12px;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.09);
+  box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.09) inset;
+}
+input[type="text"]:hover, input[type="password"]:hover{
+  background-color: rgba(0,0,0,.16);
+}
+input[type="text"]:focus, input[type="password"]:focus{
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.04) inset;
+  background-color: rgba(0,0,0,0.23);
+}
